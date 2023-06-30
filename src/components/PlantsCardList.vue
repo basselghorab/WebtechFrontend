@@ -1,23 +1,22 @@
 <template>
-<div class="row row-cols-1 row-cols-md-4 g-4">
-<div class="col" v-for="plant in plants" :key="plant.id">
-  <plant-card :plant="plant"></plant-card>
-</div>
-</div>
+  <div class="row row-cols-1 row-cols-md-4 g-4">
+    <div class="col" v-for="plant in plants" :key="plant.id">
+      <plant-card :plant="plant"></plant-card>
+    </div>
+  </div>
 </template>
 
 <script>
-
-import PlantCard from '@/components/PlatnsCards.vue'
+import PlantCard from '@/components/PlantCards.vue'
 
 export default {
-  name: 'PersonsCardList',
+  name: 'PlantsCardList',
   components: {
     PlantCard
   },
   props: {
     plants: {
-      type: Array,
+      type: Object,
       required: true
     }
   }
@@ -25,5 +24,5 @@ export default {
 </script>
 
 <style scoped>
-
+/* Füge hier benutzerdefinierte CSS-Stile hinzu, wenn nötig */
 </style>
