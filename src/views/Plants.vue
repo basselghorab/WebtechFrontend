@@ -1,44 +1,62 @@
 <template>
-    <h1>Blumen Arten</h1>
-    <div class="row">
-        <div class="col-md-6" v-for="plant in plants" :key="plant.id">
-            <div class="card mb-3">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="placeholder.jpg" class="img-fluid rounded-start" alt="Placeholder Image">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ plant.name }}</h5>
-                            <p class="card-text">{{ plant.description }}</p>
-                            <p class="card-text">Watering Interval: {{ plant.wateringIntervalDays }} days</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <h1>Plants</h1>
+  <div class="container-fluid">
+    <plants-card-list :plants="plants"></plants-card-list>
+  </div>
+  <plants-create-form @created="addPlant"></plants-create-form>
 </template>
+
 <script>
+import PlantsCardList from '@/components/PlantsCardList'
+import PlantsCreateForm from '@/components/PlantsCreateFrom'
+
 export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Plants',
+  name: 'PlantsCard',
+  components: {
+    PlantsCardList,
+    PlantsCreateForm
+  },
   data () {
     return {
       plants: []
     }
   },
-  mounted: function () {
-    const requestOption = {
-      method: 'GET',
-      redirect: 'follow'
+  methods: {
+    addPlant (plantLocation) {
+      const endpoint = process.env.DB_PATH + plantLocation
+      const requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+      }
+
+      fetch(endpoint, requestOptions)
+        .then(response => response.json())
+        .then(plant => {
+          this.plants.push(plant)
+        })
+        .catch(error => console.log('error', error))
+    },
+    fetchPlants () {
+      const endpoint = 'http://localhost:8080/api/v1/plants'
+      const requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+      }
+
+      fetch(endpoint, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          this.plants = result
+        })
+        .catch(error => console.log('error', error))
     }
-    fetch('http://localhost:8080/api/v1/plants', requestOption)
-      .then(response => response.json())
-      .then(result => result.forEach(plant => {
-        this.plants.push(plant)
-      }))
-      .then(error => console.log('error', error))
+  },
+  mounted () {
+    this.fetchPlants()
   }
 }
 </script>
+
+<style scoped>
+
+</style>
