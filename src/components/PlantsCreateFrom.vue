@@ -1,35 +1,46 @@
 <template>
-  <button class="btn btn-success sticky-button" data-bs-toggle="offcanvas" data-bs-target="#plants-create-offcanvas" aria-controls="#plants-create-offcanvas">
-    <i class="bi bi-person-plus-fill"></i>
-  </button>
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="plants-create-offcanvas" aria-labelledby="offcanvas-label">
-    <div class="offcanvas-header">
-      <h5 id="offcanvas-label">New Plant</h5>
-      <button type="button" id="close-offcanvas" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="mb-3">
-      <label for="name" class="form-label">Name</label>
-      <input type="text" class="form-control" id="name" v-model="name" required>
-      <div class="invalid-feedback">
-        Please provide a name.
+  <div>
+    <button class="btn btn-success sticky-button" data-bs-toggle="offcanvas" data-bs-target="#plants-create-offcanvas" aria-controls="plants-create-offcanvas">
+      <i class="bi bi-plus"></i>
+    </button>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="plants-create-offcanvas" aria-labelledby="offcanvas-label">
+      <div class="offcanvas-header">
+        <h5 id="offcanvas-label">New Plant</h5>
+        <button type="button" id="close-offcanvas" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-    </div>
-    <div class="mb-3">
-      <label for="description" class="form-label">Description</label>
-      <input type="text" class="form-control" id="description" v-model="description" required>
-      <div class="invalid-feedback">
-        Please provide the description.
-      </div>
-      <div v-if="serverValidationMessages.length > 0">
-        <ul>
-          <li v-for="(message, index) in serverValidationMessages" :key="index" style="color: #001aff">
-            {{ message }}
-          </li>
-        </ul>
-      </div>
-      <div class="mt-5">
-        <button class="btn btn-primary me-3" type="submit" @click.prevent="createPlant">Create</button>
-        <button class="btn btn-danger" type="reset">Reset</button>
+      <div class="offcanvas-body">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" v-model="name" required minlength="3" :class="{'is-invalid': !isValidName && submitClicked}">
+          <div class="invalid-feedback" v-show="!isValidName && submitClicked">
+            Please provide a valid name (minimum 3 characters).
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <input type="text" class="form-control" id="description" v-model="description" required minlength="3" :class="{'is-invalid': !isValidDescription && submitClicked}">
+          <div class="invalid-feedback" v-show="!isValidDescription && submitClicked">
+            Please provide a valid description (minimum 3 characters).
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="wateringIntervalDays" class="form-label">Watering Interval Days</label>
+          <input type="text" class="form-control" id="wateringIntervalDays" v-model="wateringIntervalDays" required minlength="1" :class="{'is-invalid': !isValidWateringIntervalDays && submitClicked}">
+          <div class="invalid-feedback" v-show="!isValidWateringIntervalDays && submitClicked">
+            Please provide a valid watering interval (minimum 1 day).
+          </div>
+        </div>
+        <div v-if="serverValidationMessages.length > 0">
+          <ul>
+            <li v-for="(message, index) in serverValidationMessages" :key="index" style="color: #001aff">
+              {{ message }}
+            </li>
+          </ul>
+        </div>
+        <div class="mt-5 text-end">
+          <button class="btn btn-primary me-3" type="submit" @click.prevent="createPlant" id="create-form-button">Create</button>
+          <button class="btn btn-danger" type="reset" @click="resetForm">Reset</button>
+        </div>
       </div>
     </div>
   </div>
@@ -40,54 +51,73 @@ export default {
   name: 'PlantsCreateForm',
   data () {
     return {
+      id: '',
       name: '',
       description: '',
-      image: '',
-      serverValidationMessages: []
+      wateringIntervalDays: '',
+      serverValidationMessages: [],
+      submitClicked: false
     }
   },
-  emits: ['created'],
+  computed: {
+    isValidName () {
+      return this.name.length >= 3
+    },
+    isValidDescription () {
+      return this.description.length >= 3
+    },
+    isValidWateringIntervalDays () {
+      return this.wateringIntervalDays.length >= 1
+    }
+  },
   methods: {
-    async createPlant () {
-      if (this.validate()) {
-        const endpoint = process.env.VUE_APP_BACKEND_BASE_URL + '/api/v1/plants'
+    createPlant () {
+      this.submitClicked = true
+      console.log('Name:', this.name)
+      console.log('Description:', this.description)
+      console.log('Watering Interval Days:', this.wateringIntervalDays)
 
-        const headers = new Headers()
-        headers.append('Content-Type', 'application/json')
-
-        const plantData = JSON.stringify({
-          name: this.name,
-          description: this.description
-        })
-
-        const requestOptions = {
-          method: 'POST',
-          headers: headers,
-          body: plantData,
-          redirect: 'follow'
-        }
-
-        const response = await fetch(endpoint, requestOptions)
-        await this.handleResponse(response)
+      if (!this.isValidName || !this.isValidDescription || !this.isValidWateringIntervalDays) {
+        console.log('Bitte füllen Sie alle erforderlichen Felder aus.')
+        return
       }
-    },
-    async handleResponse (response) {
-      if (response.ok) {
-        this.$emit('created', response.headers.get('location'))
-        document.getElementById('close-offcanvas').click()
-      } else if (response.status === 400) {
-        const responseBody = await response.json()
-        responseBody.errors.forEach(error => {
-          this.serverValidationMessages.push(error.defaultMessage)
-        })
-      } else {
-        this.serverValidationMessages.push('Unknown error occurred')
+
+      if (this.wateringIntervalDays <= 0) {
+        console.log('Das Bewässerungsintervall muss größer als 0 sein.')
+        return
       }
+
+      const data = {
+        name: this.name,
+        description: this.description,
+        wateringIntervalDays: this.wateringIntervalDays
+      }
+
+      const endpoint = 'http://localhost:8080/api/v1/plants'
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+        redirect: 'follow'
+      }
+
+      fetch(endpoint, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+          console.log('Plant created:', data)
+          this.$emit('created', data)
+          window.location.reload()
+        })
+        .catch(error => console.log('Error:', error))
     },
-    validate () {
-      const form = document.getElementById('plants-create-form')
-      form.classList.add('was-validated')
-      return form.checkValidity()
+    resetForm () {
+      this.id = ''
+      this.name = ''
+      this.description = ''
+      this.wateringIntervalDays = ''
+      this.submitClicked = false
     }
   }
 }
@@ -100,5 +130,9 @@ export default {
   right: 20px;
   padding: 10px 15px;
   border-radius: 30px;
+}
+
+.is-invalid {
+  border-color: #0d0e0d;
 }
 </style>

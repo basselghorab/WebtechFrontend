@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import PlantCard from '@/components/PlantCards.vue'
+import PlantCard from '@/components/PlatnCards.vue'
 
 export default {
   name: 'PlantsCardList',
@@ -16,7 +16,7 @@ export default {
   },
   props: {
     plants: {
-      type: Object,
+      type: Array,
       required: true
     }
   }

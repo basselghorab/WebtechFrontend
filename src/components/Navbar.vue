@@ -9,17 +9,29 @@
         <div class="navbar-nav">
           <router-link class="nav-link" to="/">Home</router-link>
           <router-link class="nav-link" to="/about">About</router-link>
-            <router-link class="nav-link" to="/plants">Plants</router-link>
+          <router-link class="nav-link" to="/plants">Plants</router-link>
         </div>
       </div>
+      <notification-icon :notifications="notifications"></notification-icon>
     </div>
   </nav>
 </template>
 
 <script>
+import NotificationIcon from '@/components/NotificationIcon'
+
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Navbar'
+  name: 'Navbar',
+  components: {
+    NotificationIcon
+  },
+  data () {
+    return {
+      notifications: []
+    }
+  }
+  // Implement methods or watch properties to update the notifications
 }
 </script>
 

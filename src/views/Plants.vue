@@ -3,9 +3,8 @@
   <div class="container-fluid">
     <plants-card-list :plants="plants"></plants-card-list>
   </div>
-  <plants-create-form @created="addPlant"></plants-create-form>
+  <plants-create-form @created="createPlant"></plants-create-form>
 </template>
-
 <script>
 import PlantsCardList from '@/components/PlantsCardList'
 import PlantsCreateForm from '@/components/PlantsCreateFrom'
@@ -22,10 +21,12 @@ export default {
     }
   },
   methods: {
-    addPlant (plantLocation) {
-      const endpoint = process.env.DB_PATH + plantLocation
+    createPlant (newPlant) {
+      const endpoint = 'http://localhost:8080/api/v1/plants'
       const requestOptions = {
-        method: 'GET',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPlant),
         redirect: 'follow'
       }
 
