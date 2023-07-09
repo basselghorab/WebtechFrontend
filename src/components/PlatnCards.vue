@@ -1,5 +1,5 @@
 <template>
-  <div class="card h-100" @click="navigateToPlantDetails">
+  <div class="card h-100">
     <img :src="getAvatar(plant)" class="card-img-top" :alt="plant.name">
     <div class="card-body">
       <div>
@@ -9,18 +9,32 @@
       </div>
       <div>
         <p class="card-text custom-description-font">
-          {{ plant.description }} hat eine wateringIntervalDays von {{ plant.wateringIntervalDays }} Tage.
+          {{ plant.description }} has a wateringintervalDays   {{ plant.wateringIntervalDays }}Days .
+          <select v-model="reminderTime">
+            <option value="09:00">09:00</option>
+            <option value="12:00">12:00</option>
+            <option value="15:00">15:00</option>
+            <!-- Add more options as needed -->
+          </select>
         </p>
       </div>
+      <!-- Hinzufügen einer Schaltfläche, die das Modal öffnet -->
+      <button @click.stop="showReminderModal">set a reminder</button>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-primary" @click.stop="navigateToPlantDetails">more Details</button>
     </div>
     <!-- Modal-Komponente -->
-    <reminder-modal v-model="showModal" :plant="plant" @reminderSet="handleReminderSet"></reminder-modal>
+    <reminder-modal :value="showModal" :plant="plant" @reminderSet="handleReminderSet"></reminder-modal>
+
   </div>
 </template>
 
 <script>
-import ReminderModal from './ReminderModal.vue'
 import router from '@/router'
+import ReminderModal from '@/components/ReminderModal.vue'
+import axios from "axios";
+
 export default {
   name: 'PlantCard',
   components: {
@@ -34,7 +48,8 @@ export default {
   },
   data () {
     return {
-      showModal: false
+      showModal: false,
+      reminderTime: null
     }
   },
   methods: {
@@ -50,6 +65,36 @@ export default {
       } else {
         return defaultImagePath // Verwenden Sie den Standardbildpfad, wenn kein Bildpfad in der Datenbank vorhanden ist
       }
+    },
+    handleReminderSet (payload) {
+      console.log('Reminder set for', payload.dateTime)
+
+
+      axios(
+        {
+          url: `http://localhost:8080/api/v1/plants/reminders/${payload.plant.id}`,
+          method: "POST",
+          data: JSON.stringify({
+            plantId: payload.plant.id,
+            dateTime: payload.dateTime
+          }),
+          withCredentials: true,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Credentials': 'true'
+          }
+        }).then(response => {
+          console.log(response.data)
+      }).catch(error => {
+          // Handle the error
+          console.error('Error saving reminder:', error)
+          // Rest of the code...
+        })
+    },
+    showReminderModal () {
+      this.showModal = true
+      this.reminderTime = null
     }
   }
 }

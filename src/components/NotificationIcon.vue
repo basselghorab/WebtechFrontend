@@ -8,6 +8,7 @@
       <div class="notification" v-for="notification in notifications" :key="notification.plantId">
         {{notification.message}}
       </div>
+      <div class="notification-time" v-if="notificationTime">{{ notificationTime }}</div>
     </div>
   </div>
 </template>
@@ -15,7 +16,7 @@
 <script>
 export default {
   name: 'NotificationIcon',
-  props: ['notifications'],
+  props: ['notifications', 'notificationTime'],
   data () {
     return {
       showNotifications: false
@@ -56,5 +57,10 @@ export default {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.notification-time {
+  margin-top: 1em;
+  text-align: center;
 }
 </style>

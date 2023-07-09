@@ -8,7 +8,6 @@
 <script>
 import PlantsCardList from '@/components/PlantsCardList'
 import PlantsCreateForm from '@/components/PlantsCreateFrom'
-
 export default {
   name: 'PlantsCard',
   components: {
@@ -17,7 +16,9 @@ export default {
   },
   data () {
     return {
-      plants: []
+      plants: [],
+      showModal: false,
+      plant: null
     }
   },
   methods: {
@@ -50,7 +51,32 @@ export default {
           this.plants = result
         })
         .catch(error => console.log('error', error))
+    },
+    handleReminderSet (reminder) {
+      console.log('Erinnerung gesetzt für', reminder.date, reminder.time)
+      // 1. Speichern der Erinnerung (Beispiel mit fetch)
+      const endpoint = 'http://localhost:8080/api/v1/reminders'
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reminder),
+        redirect: 'follow'
+      }
+
+      fetch(endpoint, requestOptions)
+        .then(response => response.json())
+        .then(savedReminder => {
+          // 2. Handle the saved reminder as needed
+          console.log('Erinnerung gespeichert:', savedReminder)
+          // Rest of the code...
+        })
+        .catch(error => {
+          // 3. Handle the error
+          console.error('Fehler beim Speichern der Erinnerung:', error)
+          // Rest of the code...
+        })
     }
+
   },
   mounted () {
     this.fetchPlants()

@@ -70,37 +70,35 @@ export default {
       loginMesage: ''
     }
   },
-  methods: {
-    login: function () {
-      fetch('/api/v1/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: this.username,
-          password: this.password
-        })
+  login: function () {
+    fetch('/api/v1/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: this.username,
+        password: this.password
       })
-        .then((response) => {
-          if (response.ok) {
-            return response.json()
-          } else {
-            throw new Error('Login failed.')
-          }
-        })
-        .then((data) => {
-          // Login erfolgreich
-          console.log(data)
-          localStorage.setItem('isLoggedIn', true)
-          // Weiterleitung zur "Plants"-Komponente
-          this.$router.push({ name: 'plants' })
-        })
-        .catch((error) => {
-          console.error('Error:', error)
-          this.loginMessage = 'Login fehlgeschlagen'
-        })
-    }
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          throw new Error('Login failed.')
+        }
+      })
+      .then((data) => {
+        // Login successful
+        console.log(data)
+        localStorage.setItem('isLoggedIn', true)
+        // Redirect to the plant page
+        this.$router.push({ name: 'plants' })
+      })
+      .catch((error) => {
+        console.error('Error:', error)
+        this.loginMessage = 'Login failed.'
+      })
   }
 }
 </script>
