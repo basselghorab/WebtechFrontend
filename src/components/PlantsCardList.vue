@@ -24,5 +24,37 @@ export default {
 </script>
 
 <style scoped>
-/* Füge hier benutzerdefinierte CSS-Stile hinzu, wenn nötig */
+.col {
+  transition: 0.3s;
+}
+
+.col:hover {
+  transform: scale(1.02);
+}
+
+.plant-card {
+  border-radius: 15px;
+  box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+  margin: 10px;
+  padding: 20px;
+  background-color: #34495e;
+  color: #ecf0f1;
+}
+
+.plant-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 15px 15px 0 0;
+}
+
+.plant-card h5 {
+  color: #e67e22; /* This gives your title an orange color */
+}
+
+.plant-card p {
+  color: #27ae60; /* This gives your details a light green color */
+}
+
 </style>
+
+

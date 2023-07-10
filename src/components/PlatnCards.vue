@@ -10,12 +10,6 @@
       <div>
         <p class="card-text custom-description-font">
           {{ plant.description }} has a wateringintervalDays   {{ plant.wateringIntervalDays }}Days .
-          <select v-model="reminderTime">
-            <option value="09:00">09:00</option>
-            <option value="12:00">12:00</option>
-            <option value="15:00">15:00</option>
-            <!-- Add more options as needed -->
-          </select>
         </p>
       </div>
       <!-- Hinzufügen einer Schaltfläche, die das Modal öffnet -->
@@ -68,6 +62,9 @@ export default {
     },
     handleReminderSet (payload) {
       console.log('Reminder set for', payload.dateTime)
+
+      const newDateTime = new Date(payload.dateTime);
+      newDateTime.setDate(newDateTime.getDate() + this.plant.wateringIntervalDays);
 
 
       axios(

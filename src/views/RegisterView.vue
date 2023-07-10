@@ -1,23 +1,33 @@
 <template>
   <div class="container">
-    <h2 class="mb-4">Register</h2>
-    <form @submit.prevent="register">
-      <div class="form-group">
-        <input type="text" v-model="registerData.username" class="form-control" placeholder="Username" required>
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Register</h2>
+            <form @submit.prevent="register">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" v-model="registerData.username" id="username" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" v-model="registerData.password" id="password" class="form-control" required>
+              </div>
+              <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+              <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+            <p class="mt-3 text-center">Already have an account? <router-link to="/">Login here</router-link></p>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <input type="password" v-model="registerData.password" class="form-control" placeholder="Password" required>
-      </div>
-      <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-      <button type="submit" class="btn btn-primary w-100">Register</button>
-    </form>
-    <p class="mt-3 text-center">Already have an account? <router-link to="/">Login here</router-link></p>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       registerData: {
         username: '',
@@ -28,7 +38,7 @@ export default {
     }
   },
   methods: {
-    register () {
+    register() {
       if (!this.registerData.username || !this.registerData.password) {
         this.errorMessage = 'Please enter both username and password.'
         return
@@ -56,5 +66,7 @@ export default {
 </script>
 
 <style scoped>
-/* Add any custom CSS styles here */
+.card {
+  margin-top: 20px;
+}
 </style>

@@ -1,10 +1,31 @@
 <template>
-  <h1>Plants</h1>
-  <div class="container-fluid">
-    <plants-card-list :plants="plants"></plants-card-list>
+  <div>
+    <h1 class="text-center mt-4">Plants</h1>
+    <div class="container">
+      <div class="row justify-content-end">
+        <div class="col-lg-3">
+          <input type="text" v-model="searchTerm" placeholder="Search for plants..." class="form-control">
+        </div>
+        <div class="col-lg-1">
+          <button class="btn btn-primary">Notifications</button>
+        </div>
+      </div>
+      <div class="row justify-content-center mt-3">
+        <div class="col-lg-10">
+          <plants-card-list :plants="filteredPlants"></plants-card-list>
+        </div>
+      </div>
+    </div>
+    <div class="container mt-4">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <plants-create-form @created="createPlant"></plants-create-form>
+        </div>
+      </div>
+    </div>
   </div>
-  <plants-create-form @created="createPlant"></plants-create-form>
 </template>
+
 <script>
 import PlantsCardList from '@/components/PlantsCardList'
 import PlantsCreateForm from '@/components/PlantsCreateFrom'
@@ -14,15 +35,20 @@ export default {
     PlantsCardList,
     PlantsCreateForm
   },
-  data () {
+  data() {
     return {
       plants: [],
-      showModal: false,
-      plant: null
+      searchTerm: ''
+    }
+  },
+  computed: {
+    filteredPlants() {
+      if(this.searchTerm === '') return this.plants
+      return this.plants.filter(plant => plant.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
     }
   },
   methods: {
-    createPlant (newPlant) {
+    createPlant(newPlant) {
       const endpoint = 'http://localhost:8080/api/v1/plants'
       const requestOptions = {
         method: 'POST',
@@ -38,7 +64,7 @@ export default {
         })
         .catch(error => console.log('error', error))
     },
-    fetchPlants () {
+    fetchPlants() {
       const endpoint = 'http://localhost:8080/api/v1/plants'
       const requestOptions = {
         method: 'GET',
@@ -52,7 +78,7 @@ export default {
         })
         .catch(error => console.log('error', error))
     },
-    handleReminderSet (reminder) {
+    handleReminderSet(reminder) {
       console.log('Erinnerung gesetzt für', reminder.date, reminder.time)
       // 1. Speichern der Erinnerung (Beispiel mit fetch)
       const endpoint = 'http://localhost:8080/api/v1/reminders'
@@ -76,14 +102,15 @@ export default {
           // Rest of the code...
         })
     }
-
   },
-  mounted () {
+  mounted() {
     this.fetchPlants()
   }
 }
 </script>
 
 <style scoped>
-
+.container {
+  margin-top: 20px;
+}
 </style>
